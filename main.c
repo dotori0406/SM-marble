@@ -47,7 +47,7 @@ static char player_name [MAX_PLAYER][MAX_CHARNAME];
 
 //function prototypes
 #if 0
-int isGraduated(void); //check if any player is graduated
+//int isGraduated(void); //check if any player is graduated
 //void printGrades(int player); //print grade history of the player
 //void goForward(int player, int step); //make player go "step" steps on the board (check if player is graduated)
 //void printPlayerStatus(void); //print all player status at the beginning of each turn
@@ -105,15 +105,16 @@ void generatePlayers(int n, int initEnergy) //generate a new player
 
 //성적을 랜덤으로 1개 뽑는 함수 
 char* getRandomGrade() {
-    static char* gradeStrings[] = {
+  
+    char* smmObjGrade_e[] = {
         "A+", "A0", "A-", "B+", "B0", "B-", "C+", "C0", "C-"
     };
 
-    return gradeStrings[rand() % (sizeof(gradeStrings) / sizeof(gradeStrings[0]))];
+    return smmObjGrade_e[rand() % (9)];
 }
 
 
-void printGrades(int player)
+void printGrades(int player) 
 {
      int i;
      void *gradePtr;
@@ -121,24 +122,46 @@ void printGrades(int player)
      for (i=0;i<smmdb_len(LISTNO_OFFSET_GRADE + player);i++)
      {
          gradePtr = smmdb_getData(LISTNO_OFFSET_GRADE + player, i);
-         printf("%s : %s\n", smmObj_getNodeName(gradePtr), smmGrade);
+         printf("%s : %i\n", smmObj_getNodeName(gradePtr), smmObj_getNodeGrade(gradePtr));
      }
 }
 
-int rolldie(int player)
+int rolldie(int player) //랜덤으로 주사위 값을 주는 함수  
 {
     char c;
     printf(" Press any key to roll a die (press g to see grade): ");
     c = getchar();
     fflush(stdin);
     
-#if 1
+#if 1 // 주사위를 굴릴 때  'g'를 누르면 상태를 확인할 수 있게 함  
     if (c == 'g')
         printGrades(player);
 #endif
     
     return (rand()%MAX_DIE + 1);
 }
+
+int isGraduated(void) //졸업 학점을 채우는 지 확인  
+{
+    int i;
+    for (i = 0; i < player_nr; i++)
+    {
+        if (cur_player[i].accumCredit >= GRADUATE_CREDIT)
+        {
+            cur_player[i].flag_graduate = 1
+            break;
+        }
+    }
+    
+}
+      
+
+int game_end(void)
+{
+    
+}
+    
+    
 
 
 //action code when a player stays at a node
@@ -159,7 +182,7 @@ void actionNode(int player)
             
             //grade generation
             char* smmGrade = getRandomGrade();
-            gradePtr = smmObj_genObject(name, smmObjType_grade, 0, smmObj_getNodeCredit( boardPtr ), 0, smmGrade); //랜드함수수정
+            gradePtr = smmObj_genObject(name, smmObjType_grade, 0, smmObj_getNodeCredit( boardPtr ), 0, smmGrade); 
             smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
             
             break;
@@ -293,7 +316,7 @@ int main(int argc, const char * argv[]) {
     
     
     //3. SM Marble game starts ---------------------------------------------------------------------------------
-    while (1) //is anybody graduated?
+    while (game_end == 1) //is anybody graduated?
     {
         int die_result;
         
