@@ -189,7 +189,7 @@ int isGraduated(void) //졸업 학점을 채우는 지 확인
     {
         if (cur_player[i].accumCredit >= GRADUATE_CREDIT)
         {
-            cur_player[i].flag_graduate = 1
+            cur_player[i].flag_graduate = 1;
             break;
         }
     }
@@ -262,7 +262,7 @@ void actionNode(int player)
         case SMMNODE_TYPE_LABORATORY : 
              printf("실험실에 들어왔습니다.\n");
              
-             if (cur_player[i].flag_laboratory = 1) // 실험중일 때  flag_laboratory로 실험 중임을 구분  
+             if (cur_player[player].flag_laboratory = 1) // 실험중일 때  flag_laboratory로 실험 중임을 구분  
              {
                  printf("실험 시간! 자 멋진 실험결과로 교수님을 만족시켜 봅시다. (3점 이상의 실험을 보여주자!)");
                  int labdice_result = lab_rolldie();
@@ -336,18 +336,18 @@ void actionNode(int player)
 
 void goForward(int player, int step)
 {
-     if (flag_laboratory == 0) //실험 중이면 동작 X  
-     {
-        void *boardPtr;
-        cur_player[player].position += step;
-        boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position );
-        
-        
-        printf("%s go to node %i (type:%s)\n",
-                cur_player[player].name,cur_player[player].position,
-                smmObj_getNodeName(cur_player[player].position));
-                
-     }
+     for (i = 0; i < player_nr; i++)
+    {
+         if (cur_player[i].flag_laboratory == 0) //실험 중이면 동작 X  
+            {
+                void *boardPtr;
+                cur_player[player].position += step;
+                boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position );
+                printf("%s go to node %i (type:%s)\n",
+                         cur_player[player].name,cur_player[player].position,
+                         smmObj_getNodeName(cur_player[player].position));
+            }
+    }
      else //실험 중일 때 출력   
         printf("이런 플레이어 %s 는 현재 실험실에 있네요...\n",cur_player[player].name); 
  }
