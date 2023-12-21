@@ -142,6 +142,7 @@ void* getRandomFoodEnergy(void) {
 
      }
      
+//축제 미션을 랜덤으로 뽑는 함수 
 char* getRandomFestival(){
       
       char* smmMission[] = {
@@ -153,7 +154,7 @@ char* getRandomFestival(){
 }
      
 
-
+//성적 출력 
 void printGrades(int player) 
 {
      int i;
@@ -249,6 +250,7 @@ void actionNode(int player)
         //식당칸
         case SMMNODE_TYPE_RESTAURANT:
              printf("식당에 들어왔습니다. 음식을 먹습니다.\n");
+                 //음식을 랜덤으로 뽑아서 먹음 
                  char* smmFood_d = getRandomFood();
                  int* foodenergy = getRandomFoodEnergy();
                  printf("%s을(를) 먹습니다.\n", smmFood_d);
@@ -260,7 +262,7 @@ void actionNode(int player)
         case SMMNODE_TYPE_LABORATORY : 
              printf("실험실에 들어왔습니다.\n");
              
-             if (cur_player[i].flag_laboratory = 1) // 실험중 
+             if (cur_player[i].flag_laboratory = 1) // 실험중일 때  flag_laboratory로 실험 중임을 구분  
              {
                  printf("실험 시간! 자 멋진 실험결과로 교수님을 만족시켜 봅시다. (3점 이상의 실험을 보여주자!)");
                  int labdice_result = lab_rolldie();
@@ -275,21 +277,25 @@ void actionNode(int player)
                       printf(" 이런 결과가 좋지 않네요... 더 열심히 다시 도전해봅시다! \n");
              }
         
-             else
+             else //실험 노드를 통해 실험실 칸을 온 것이 아닐 때 출력   
                  printf("실험시간 아님. 실험실 미개방.\n");          
           break; 
              
              
              
          case SMMNODE_TYPE_HOME : 
+              //집에 들어오면 기본 에너지를 제공  
               printf("집에 들어왔습니다. 몸이 편안하네요. %i 만큼 에너지를 회복합니다.\n",Home_Energy); 
               printf("%s 의 총 에너지 : %i \n" ,cur_player[player].name,cur_player[player].energy + Home_Energy);
               
          break; 
          
          case SMMNODE_TYPE_GOTOLAB : 
+              //이 칸을 통해서 실험 진입 가능  
               printf(" 이런! 실험시간이 다 되었네요. 플레이어 %s 는(은) 실험실로 이동해 실험을 진행합니다.",cur_player[player].name);
-              cur_player[player].flag_laboratory = 1;
+              cur_player[i].position = SMMNODE_TYPE_LABORATORY; //실험실로 이동  
+              
+              cur_player[player].flag_laboratory = 1; //실험 중으로 변환  
               
          break;
          
@@ -297,6 +303,7 @@ void actionNode(int player)
               printf(" 플레이어 %s 는(은) 음식 찬스를 얻었습니다! Congraturation! \n",cur_player[player].name);
               printf(" 아무 키나 눌러 카드를 확인하세요!");
               getchar(); 
+              //음식 카드 뽑기  
               char* smmFood_d = getRandomFood();
               int* foodenergy = getRandomFoodEnergy();
               printf("%s을(를) 먹습니다.\n", smmFood_d);
@@ -307,10 +314,10 @@ void actionNode(int player)
          
          case SMMNODE_TYPE_FESTIVAL : 
               printf("%s 는(은) 축제 부스에 도착했습니다! 미션을 확인하고 부스를 클리어해봅시다! \n", cur_player[player].name);
-              getchar();
-              char* smmMission = getRandomFestival();
+              getchar(); //미션 확인과 카드 뽑기용  
+              char* smmMission = getRandomFestival(); //미션 카드 뽑기  
               printf("당신의 미션은 [%s] 입니다\n", smmMission); 
-              getcahr();
+              getcahr(); //미션 수행하기위함  
               printf("미션을 클리어 하셨네요! 다음으로 넘어갑시다!\n"); 
               getcahr();
            
@@ -329,7 +336,7 @@ void actionNode(int player)
 
 void goForward(int player, int step)
 {
-     if (flag_laboratory == 0)
+     if (flag_laboratory == 0) //실험 중이면 동작 X  
      {
         void *boardPtr;
         cur_player[player].position += step;
@@ -341,7 +348,7 @@ void goForward(int player, int step)
                 smmObj_getNodeName(cur_player[player].position));
                 
      }
-     else
+     else //실험 중일 때 출력   
         printf("이런 플레이어 %s 는 현재 실험실에 있네요...\n",cur_player[player].name); 
  }
 
