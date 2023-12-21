@@ -17,6 +17,8 @@
 #define FOODFILEPATH "marbleFoodConfig.txt"
 #define FESTFILEPATH "marbleFestivalConfig.txt"
 
+#define Home_Energy        18
+
 
 //board configuration parameters
 static int board_nr;
@@ -32,6 +34,7 @@ typedef struct player {
         char name[MAX_CHARNAME];
         int accumCredit;
         int flag_graduate;
+        int flag_laboratory; 
         
 } player_t;
 
@@ -102,6 +105,7 @@ void generatePlayers(int n, int initEnergy) //generate a new player
          cur_player[i].energy = initEnergy;
          cur_player[i].accumCredit = 0;
          cur_player[i].flag_graduate = 0;
+         cur_player[i].flag_laboratory = 0;
          //초기화 코드 
      }
 }
@@ -137,6 +141,16 @@ void* getRandomFoodEnergy(void) {
      foodenergy = rand()%16;
 
      }
+     
+char* getRandomFestival(){
+      
+      char* smmMission[] = {
+            "노래한곡하고가시죠.", "졸업후포부한마디해주세요.", "오늘집에가서뭐하고싶어요?", "프로그래밍수업에대한소감한마디해주세요.", "동네맛집하나소개해주세요."
+            };
+            
+      return  smmMission[rand()%5];
+      
+}
      
 
 
@@ -179,6 +193,15 @@ int isGraduated(void) //졸업 학점을 채우는 지 확인
         }
     }
     
+}
+
+int lab_rolldie(void) //랜덤으로 주사위 값을 주는 함수 => 실험실용 
+{
+    char c;
+    printf(" Press any key to roll a die ");
+    c = getchar();
+    
+    return (rand() % 6) + 1;
 }
       
 
@@ -235,6 +258,67 @@ void actionNode(int player)
         break;
         
         case SMMNODE_TYPE_LABORATORY : 
+             printf("실험실에 들어왔습니다.\n");
+             
+             if (cur_player[i].flag_laboratory = 1) // 실험중 
+             {
+                 printf("실험 시간! 자 멋진 실험결과로 교수님을 만족시켜 봅시다. (3점 이상의 실험을 보여주자!)");
+                 int labdice_result = lab_rolldie();
+                 printf("당신의 실험 결과는 .. . . . .  %i 점! \n",labdice_result);
+                 
+                 if ( labdice_result >= 4 )
+                 {
+                      cur_player[player].flag_laboratory = 0;
+                      printf("실험 성공!! 실험실을 벗어나 다음으로 갑시다!\n");
+                 }
+                 else  
+                      printf(" 이런 결과가 좋지 않네요... 더 열심히 다시 도전해봅시다! \n");
+             }
+        
+             else
+                 printf("실험시간 아님. 실험실 미개방.\n");          
+          break; 
+             
+             
+             
+         case SMMNODE_TYPE_HOME : 
+              printf("집에 들어왔습니다. 몸이 편안하네요. %i 만큼 에너지를 회복합니다.\n",Home_Energy); 
+              printf("%s 의 총 에너지 : %i \n" ,cur_player[player].name,cur_player[player].energy + Home_Energy);
+              
+         break; 
+         
+         case SMMNODE_TYPE_GOTOLAB : 
+              printf(" 이런! 실험시간이 다 되었네요. 플레이어 %s 는(은) 실험실로 이동해 실험을 진행합니다.",cur_player[player].name);
+              cur_player[player].flag_laboratory = 1;
+              
+         break;
+         
+         case SMMNODE_TYPE_FOODCHANCE : 
+              printf(" 플레이어 %s 는(은) 음식 찬스를 얻었습니다! Congraturation! \n",cur_player[player].name);
+              printf(" 아무 키나 눌러 카드를 확인하세요!");
+              getchar(); 
+              char* smmFood_d = getRandomFood();
+              int* foodenergy = getRandomFoodEnergy();
+              printf("%s을(를) 먹습니다.\n", smmFood_d);
+              printf("%d 에너지가 회복되었습니다.\n", foodenergy);
+              printf("현재 에너지 총량은 %i 입니다. \n", cur_player[player].energy + foodenergy);
+              
+         break; 
+         
+         case SMMNODE_TYPE_FESTIVAL : 
+              printf("%s 는(은) 축제 부스에 도착했습니다! 미션을 확인하고 부스를 클리어해봅시다! \n", cur_player[player].name);
+              getchar();
+              char* smmMission = getRandomFestival();
+              printf("당신의 미션은 [%s] 입니다\n", smmMission); 
+              getcahr();
+              printf("미션을 클리어 하셨네요! 다음으로 넘어갑시다!\n"); 
+              getcahr();
+           
+          break;
+              
+               
+               
+                  
               
             
         default:
@@ -245,13 +329,20 @@ void actionNode(int player)
 
 void goForward(int player, int step)
 {
-     void *boardPtr;
-     cur_player[player].position += step;
-     boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position );
-     
-     printf("%s go to node %i (type:%s)\n",
+     if (flag_laboratory == 0)
+     {
+        void *boardPtr;
+        cur_player[player].position += step;
+        boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position );
+        
+        
+        printf("%s go to node %i (type:%s)\n",
                 cur_player[player].name,cur_player[player].position,
                 smmObj_getNodeName(cur_player[player].position));
+                
+     }
+     else
+        printf("이런 플레이어 %s 는 현재 실험실에 있네요...\n",cur_player[player].name); 
  }
 
 
