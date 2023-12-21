@@ -26,6 +26,23 @@ static char smmNodeName[SMMNODE_TYPE_MAX][MAX_CHARNAME] = {
        "축제시간"
 };
 
+static char smmNodeFood[SMMNODE_TYPE_MAX][MAX_CHARNAME] = {
+       "치킨",
+       "맥주",
+       "탕후루",
+       "컵라면",
+       "감자탕",
+       "컵밥",
+       "짜장면",
+       "학식",
+       "파스타",
+       "피자 ",
+       "햄버거",
+       "샌드위치",
+       "요거트",
+       "비빔밥"
+};
+
 char* smmObj_getTypeName(int type)
 {
       return (char*)smmNodeName [type ];
@@ -54,6 +71,12 @@ typedef struct smmObject {
        smmObjGrade_e grade;
 } smmObject_t;
 
+//음식 - 에너지 구조체 
+typedef struct smmFood {
+       char name[MAX_CHARNAME];
+       int energy;
+} smmFood_d;
+
 //2.  구조체 배열 변수 정의   
 //static smmObject_t smm_node[MAX_NODE];
 
@@ -65,6 +88,8 @@ static int smmObj_type[MAX_NODE];
 static int smmObj_credit[MAX_NODE];
 static int smmObj_energy[MAX_NODE];
 #endif
+
+
 
 //3. 관련 함수 변경 
 //object generation
@@ -82,6 +107,19 @@ void* smmObj_genObject(char* name, smmObjType_e objType, int type, int credit, i
     ptr->grade = grade;
     
     return ptr;
+}
+
+//음식 생성 
+void smmObj_foodCard(char* food_name, int food_energy)
+{
+	smmFood_d* foodptr;
+	
+	foodptr = (smmFood_d*)malloc(sizeof(smmFood_d));
+	
+	strcpy(Foodptr->food_name, food_name);
+	foodptr->food_energy = food_energy;
+	
+	return foodptr;
 }
 
     

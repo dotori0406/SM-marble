@@ -34,8 +34,15 @@ typedef struct player {
         int flag_graduate;
         
 } player_t;
+
+typedef struct food {
+        char name[MAX_CHARNAME];
+        int energy;
+
+} food_d;
         
 static player_t *cur_player;
+static food_d *cur_food;
 //static player_t cur_player[MAX_PLAYER];
 
 #if 0
@@ -112,6 +119,25 @@ char* getRandomGrade() {
 
     return smmObjGrade_e[rand() % (9)];
 }
+
+//랜덤하게 음식을 뽑는 함수 
+char* getRandomFood() {
+  
+    char* smmFood_d[] = {
+          "치킨", "맥주","탕후루", "컵라면","감자탕", "컵밥", "짜장면", "학식", "파스타", "피자", "햄버거", "샌드위치", "요거트", "비빔밥"
+
+    };
+
+    return smmFood_d[rand() %14];
+}
+
+//음식에 에너지를 랜덤하게 지정  
+void* getRandomFoodEnergy(void) {
+     int* foodenergy;
+     foodenergy = rand()%16;
+
+     }
+     
 
 
 void printGrades(int player) 
@@ -195,7 +221,21 @@ void actionNode(int player)
             gradePtr = smmObj_genObject(name, smmObjType_grade, 0, smmObj_getNodeCredit( boardPtr ), 0, smmGrade); 
             smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
             
-            break;
+        break;
+            
+        //식당칸
+        case SMMNODE_TYPE_RESTAURANT:
+             printf("식당에 들어왔습니다. 음식을 먹습니다.\n");
+                 char* smmFood_d = getRandomFood();
+                 int* foodenergy = getRandomFoodEnergy();
+                 printf("%s을(를) 먹습니다.\n", smmFood_d);
+                 printf("%d 에너지가 회복되었습니다.\n", foodenergy);
+                 printf("현재 에너지 총량은 %i 입니다. \n", cur_player[player].energy + foodenergy);
+                 
+        break;
+        
+        case SMMNODE_TYPE_LABORATORY : 
+              
             
         default:
             break;
