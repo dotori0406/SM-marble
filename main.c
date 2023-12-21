@@ -156,8 +156,18 @@ int isGraduated(void) //졸업 학점을 채우는 지 확인
 }
       
 
-int game_end(void)
+int game_end(void) // 게임을 끝낼 때 사용  
 {
+    int i;
+    int Game_end_flag;
+    
+    for (i = 0; i < player_nr; i++)
+    {
+        if (cur_player[i].flag_graduate == 1 && cur_player[i].position == SMMNODE_TYPE_HOME)
+        {
+            Game_end_flag = 1;
+        }
+    }
     
 }
     
@@ -263,7 +273,7 @@ int main(int argc, const char * argv[]) {
     
     
     
-    #if 0
+  
     
     //2. food card config 
     if ((fp = fopen(FOODFILEPATH,"r")) == NULL)
@@ -296,9 +306,9 @@ int main(int argc, const char * argv[]) {
     }
     fclose(fp);
     printf("Total number of festival cards : %i\n", festival_nr);
-    #endif 
+   
     
-    //2번만 활성화  
+
     
     //2. Player configuration ---------------------------------------------------------------------------------
     
@@ -316,7 +326,7 @@ int main(int argc, const char * argv[]) {
     
     
     //3. SM Marble game starts ---------------------------------------------------------------------------------
-    while (game_end == 1) //is anybody graduated?
+    while (Game_end_flag == 1) //is anybody graduated?
     {
         int die_result;
         
